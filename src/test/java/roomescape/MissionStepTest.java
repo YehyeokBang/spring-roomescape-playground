@@ -57,7 +57,11 @@ public class MissionStepTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
-        params.put("time", "15:40");
+        params.put("time", "1");
+
+        // 시간 추가
+        String query = "INSERT INTO time (id, time) VALUES (?, ?)";
+        jdbcTemplate.update(query, 1L, "12:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -124,8 +128,6 @@ public class MissionStepTest {
     @Test
     @DisplayName("6단계-예약 목록 조회 테스트(데이터베이스 연동)")
     void step_6_reservationListWithDatabase() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time) VALUES (?, ?, ?)", "브라운", "2023-08-05", "15:40");
-
         List<Reservation> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
@@ -143,7 +145,11 @@ public class MissionStepTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
-        params.put("time", "10:00");
+        params.put("time", "1");
+
+        // 시간 추가
+        String query = "INSERT INTO time (id, time) VALUES (?, ?)";
+        jdbcTemplate.update(query, 1L, "12:00");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -189,5 +195,21 @@ public class MissionStepTest {
                 .when().delete("/times/1")
                 .then().log().all()
                 .statusCode(204);
+    }
+
+    @Test
+    @DisplayName("9단계-기존 예약 추가 요청 방식 실패 테스트")
+    void step_9_createReservationFail() {
+        Map<String, String> reservation = new HashMap<>();
+        reservation.put("name", "브라운");
+        reservation.put("date", "2023-08-05");
+        reservation.put("time", "10:00");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(reservation)
+                .when().post("/reservations")
+                .then().log().all()
+                .statusCode(400);
     }
 }

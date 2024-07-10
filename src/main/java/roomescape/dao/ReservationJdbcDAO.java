@@ -4,6 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import roomescape.model.Reservation;
+import roomescape.model.Time;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,21 +23,33 @@ public class ReservationJdbcDAO implements ReservationDAO {
     }
 
     @Override
-    public Reservation saveReservation(String name, String date, String time) {
-        Map<String, Object> parameters = getParametersMapForInsert(name, date, time);
+    public Reservation saveReservation(String name, String date, Long timeId) {
+        Map<String, Object> parameters = getParametersMapForInsert(name, date, timeId);
         Number newId = simpleJdbcInsert.executeAndReturnKey(parameters);
+        Time time = getTimeById(timeId);
         return new Reservation(newId.longValue(), name, date, time);
     }
 
     @Override
     public List<Reservation> getReservations() {
-        return jdbcTemplate.query("SELECT * FROM reservation",
-                (rs, rowNum) -> new Reservation(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("date"),
-                        rs.getString("time")
-                ));
+        String query = """
+            SELECT
+                r.id as reservation_id,
+                r.name,
+                r.date,
+                t.id as time_id,
+                t.time as time_value
+            FROM reservation as r inner join time as t on r.time_id = t.id""";
+
+        return jdbcTemplate.query(query, (rs, rowNum) -> {
+            Long reservationId = rs.getLong("reservation_id");
+            String name = rs.getString("name");
+            String date = rs.getString("date");
+            Long timeId = rs.getLong("time_id");
+            String timeValue = rs.getString("time_value");
+            return new Reservation(reservationId, name, date, new Time(timeId, timeValue));
+        });
+
     }
 
     @Override
@@ -47,11 +60,20 @@ public class ReservationJdbcDAO implements ReservationDAO {
         }
     }
 
-    private Map<String, Object> getParametersMapForInsert(String name, String date, String time) {
+    private Time getTimeById(Long timeId) {
+        String query = "SELECT * FROM time WHERE id = ?";
+        return jdbcTemplate.queryForObject(query, (rs, rowNum) -> {
+            Long id = rs.getLong("id");
+            String time = rs.getString("time");
+            return new Time(id, time);
+        }, timeId);
+    }
+
+    private Map<String, Object> getParametersMapForInsert(String name, String date, Long time) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", name);
         parameters.put("date", date);
-        parameters.put("time", time);
+        parameters.put("time_id", time);
         return parameters;
     }
 }

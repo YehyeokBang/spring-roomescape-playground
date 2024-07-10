@@ -38,7 +38,16 @@ public class RoomEscapeTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "bang");
         params.put("date", "2024-07-01");
-        params.put("time", "15:00");
+        params.put("time", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of("time", "12:00"))
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201)
+                .header("Location", matchesPattern("/times/\\d+"))
+                .extract().response();
 
         var response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -58,7 +67,8 @@ public class RoomEscapeTest {
                 .body("id", is(Integer.parseInt(extractedId)))
                 .body("name", is("bang"))
                 .body("date", is("2024-07-01"))
-                .body("time", is("15:00"));
+                .body("time.id", is(1))
+                .body("time.time", is("12:00"));
     }
 
     @Test
@@ -67,7 +77,16 @@ public class RoomEscapeTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "bang");
         params.put("date", "2024-07-01");
-        params.put("time", "15:00");
+        params.put("time", "1");
+
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of("time", "12:00"))
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201)
+                .header("Location", matchesPattern("/times/\\d+"))
+                .extract().response();
 
         var response = RestAssured.given().log().all()
                 .contentType(ContentType.JSON)

@@ -23,13 +23,13 @@ import static org.springframework.http.HttpStatus.CREATED;
 public class ReservationController {
     private final ReservationDAO reservationDAO;
 
-    public ReservationController(@Qualifier("reservationJdbcDAO") ReservationDAO reservationDAO) {
+    public ReservationController(ReservationDAO reservationDAO) {
         this.reservationDAO = reservationDAO;
     }
 
     @GetMapping("/reservation")
     public String reservation() {
-        return "reservation";
+        return "new-reservation";
     }
 
     @GetMapping("/reservations")
@@ -46,8 +46,8 @@ public class ReservationController {
     public ResponseEntity<Reservation> createReservation(@RequestBody RequestReservation requestReservation) {
         String name = requestReservation.name();
         String date = requestReservation.date();
-        String time = requestReservation.time();
-        Reservation newReservation = reservationDAO.saveReservation(name, date, time);
+        Long timeId = requestReservation.time();
+        Reservation newReservation = reservationDAO.saveReservation(name, date, timeId);
 
         return ResponseEntity.status(CREATED)
                 .header(HttpHeaders.LOCATION, "/reservations/" + newReservation.getId())

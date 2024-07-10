@@ -1,6 +1,8 @@
 package roomescape.controller;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -9,19 +11,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
+import roomescape.dao.ReservationDAO;
 import roomescape.dto.RequestReservation;
 import roomescape.model.Reservation;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
 @Controller
 public class ReservationController {
-    private List<Reservation> reservations = new ArrayList<>();
-    private AtomicLong index = new AtomicLong(1);
+    private final ReservationDAO reservationDAO;
+
+    public ReservationController(@Qualifier("reservationJdbcDAO") ReservationDAO reservationDAO) {
+        this.reservationDAO = reservationDAO;
+    }
 
     @GetMapping("/reservation")
     public String reservation() {
@@ -31,21 +35,22 @@ public class ReservationController {
     @GetMapping("/reservations")
     @ResponseBody
     public ResponseEntity<List<Reservation>> reservations() {
-        return ResponseEntity.ok(reservations);
+        List<Reservation> reservations = reservationDAO.getReservations();
+        return ResponseEntity.status(HttpStatus.OK)
+                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                .body(reservations);
     }
 
     @PostMapping("/reservations")
     @ResponseBody
     public ResponseEntity<Reservation> createReservation(@RequestBody RequestReservation requestReservation) {
-        Long id = index.getAndIncrement();
         String name = requestReservation.name();
         String date = requestReservation.date();
         String time = requestReservation.time();
+        Reservation newReservation = reservationDAO.saveReservation(name, date, time);
 
-        Reservation newReservation = new Reservation(id, name, date, time);
-        reservations.add(newReservation);
         return ResponseEntity.status(CREATED)
-                .header(HttpHeaders.LOCATION, "/reservations/" + id)
+                .header(HttpHeaders.LOCATION, "/reservations/" + newReservation.getId())
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .body(newReservation);
     }
@@ -53,10 +58,9 @@ public class ReservationController {
     @DeleteMapping("/reservations/{reservationId}")
     @ResponseBody
     public ResponseEntity<Void> deleteReservations(@PathVariable Long reservationId) {
-        boolean removed = reservations.removeIf(reservation -> reservation.getId().equals(reservationId));
-        if (!removed) {
-            throw new IllegalArgumentException("Reservation not found");
-        }
-        return ResponseEntity.noContent().build();
+        reservationDAO.deleteReservation(reservationId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                .build();
     }
 }

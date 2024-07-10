@@ -2,13 +2,20 @@ package roomescape.model;
 
 public class Time {
     private static final String TIME_REGEX = "^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$";
-    private Long id;
-    private String time;
+    private final Long id;
+    private final String timeValue;
 
-    public Time(Long id, String time) {
-        checkTime(time);
+    public Time(Long id, String timeValue) {
+        checkId(id);
+        checkTime(timeValue);
         this.id = id;
-        this.time = time;
+        this.timeValue = timeValue;
+    }
+
+    private void checkId(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Id is required");
+        }
     }
 
     private void checkTime(String time) {
@@ -21,7 +28,7 @@ public class Time {
         return id;
     }
 
-    public String getTime() {
-        return time;
+    public String getTimeValue() {
+        return timeValue;
     }
 }

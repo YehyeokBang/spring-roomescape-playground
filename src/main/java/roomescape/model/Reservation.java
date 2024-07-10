@@ -1,24 +1,24 @@
 package roomescape.model;
 
 public class Reservation {
-    private Long id;
-    private String name;
-    private String date;
-    private Time time;
+    private final Long id;
+    private final String name;
+    private final String date;
+    private final Long timeId;
 
-    public Reservation(Long id, String name, String date, Time time) {
-        checkAllFields(id, name, date, time);
+    public Reservation(Long id, String name, String date, Long timeId) {
+        checkAllFields(id, name, date, timeId);
         this.id = id;
         this.name = name;
         this.date = date;
-        this.time = time;
+        this.timeId = timeId;
     }
 
-    private void checkAllFields(Long id, String name, String date, Time time) {
+    private void checkAllFields(Long id, String name, String date, Long timeId) {
         checkId(id);
         checkName(name);
         checkDate(date);
-        checkTime(time);
+        checkTimeId(timeId);
     }
 
     private void checkId(Long id) {
@@ -39,8 +39,8 @@ public class Reservation {
         }
     }
 
-    private void checkTime(Time time) {
-        if (time == null) {
+    private void checkTimeId(Long timeId) {
+        if (timeId == null) {
             throw new IllegalArgumentException("Time is required");
         }
     }
@@ -57,7 +57,7 @@ public class Reservation {
         return date;
     }
 
-    public Time getTime() {
-        return time;
+    public Long getTimeId() {
+        return timeId;
     }
 }

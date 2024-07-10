@@ -24,8 +24,8 @@ public class TimeJdbcDAO implements TimeDAO {
     @Override
     public Time saveTime(String time) {
         Map<String, Object> parameters = getParametersMapForInsert(time);
-        Number newId = simpleJdbcInsert.executeAndReturnKey(parameters);
-        return new Time(newId.longValue(), time);
+        long newId = (long) simpleJdbcInsert.executeAndReturnKey(parameters);
+        return new Time(newId, time);
     }
 
     @Override

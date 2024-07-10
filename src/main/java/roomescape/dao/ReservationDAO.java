@@ -7,5 +7,5 @@ import java.util.List;
 public interface ReservationDAO {
     Reservation saveReservation(String name, String date, Long time);
     List<Reservation> getReservations();
-    void deleteReservation(Long id);
+    void deleteReservationById(Long id);
 }

@@ -67,8 +67,7 @@ public class RoomEscapeTest {
                 .body("id", is(Integer.parseInt(extractedId)))
                 .body("name", is("bang"))
                 .body("date", is("2024-07-01"))
-                .body("time.id", is(1))
-                .body("time.time", is("12:00"));
+                .body("timeId", is(1));
     }
 
     @Test
@@ -144,5 +143,61 @@ public class RoomEscapeTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("예약 취소 시 존재하지 않는 예약 ID인 경우 상태 코드 400 반환")
+    void cancelNonExistentReservationTest() {
+        RestAssured.given().log().all()
+                .when().delete("/reservations/999")
+                .then().log().all()
+                .statusCode(400);
+    }
+
+    @Test
+    @DisplayName("예약 목록 조회 테스트")
+    void getReservationsTest() {
+        RestAssured.given().log().all()
+                .when().get("/reservations")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
+    @DisplayName("시간 목록 조회 테스트")
+    void getTimesTest() {
+        RestAssured.given().log().all()
+                .when().get("/times")
+                .then().log().all()
+                .statusCode(200);
+    }
+
+    @Test
+    @DisplayName("시간 추가 테스트")
+    void addTimeTest() {
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of("time", "12:00"))
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201);
+    }
+
+    @Test
+    @DisplayName("시간 삭제 테스트")
+    void deleteTimeTest() {
+        var response = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(Map.of("time", "12:00"))
+                .when().post("/times")
+                .then().log().all()
+                .statusCode(201)
+                .header("Location", matchesPattern("/times/\\d+"))
+                .extract().response();
+
+        RestAssured.given().log().all()
+                .when().delete("/times/" + response.path("id"))
+                .then().log().all()
+                .statusCode(204);
     }
 }

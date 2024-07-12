@@ -4,9 +4,9 @@ public record ResponseReservation(
         Long id,
         String name,
         String date,
-        Long timeId
+        ResponseTime time
 ) {
-    public static ResponseReservation of(Long id, String name, String date, Long timeId) {
-        return new ResponseReservation(id, name, date, timeId);
+    public static ResponseReservation of(Long id, String name, String date, ResponseTime time) {
+        return new ResponseReservation(id, name, date, time);
     }
 }

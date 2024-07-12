@@ -16,19 +16,19 @@ public class TimeService {
     }
 
     public List<ResponseTime> getTimes() {
-        List<Time> times = timeDAO.getTimes();
+        List<Time> times = timeDAO.findAll();
         return times.stream()
                 .map(this::mapToResponseTime)
                 .toList();
     }
 
     public ResponseTime addTime(String time) {
-        Time newTime = timeDAO.saveTime(time);
+        Time newTime = timeDAO.save(time);
         return mapToResponseTime(newTime);
     }
 
     public void deleteTime(Long id) {
-        timeDAO.deleteTime(id);
+        timeDAO.deleteById(id);
     }
 
     private ResponseTime mapToResponseTime(Time time) {

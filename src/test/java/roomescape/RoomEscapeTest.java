@@ -67,7 +67,7 @@ public class RoomEscapeTest {
                 .body("id", is(Integer.parseInt(extractedId)))
                 .body("name", is("bang"))
                 .body("date", is("2024-07-01"))
-                .body("timeId", is(1));
+                .body("time", is(Map.of("id", 1, "time", "12:00")));
     }
 
     @Test

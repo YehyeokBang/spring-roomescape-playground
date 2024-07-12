@@ -8,6 +8,7 @@ import roomescape.model.Time;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class TimeJdbcDAO implements TimeDAO {
@@ -22,14 +23,14 @@ public class TimeJdbcDAO implements TimeDAO {
     }
 
     @Override
-    public Time saveTime(String time) {
+    public Time save(String time) {
         Map<String, Object> parameters = getParametersMapForInsert(time);
         long newId = (long) simpleJdbcInsert.executeAndReturnKey(parameters);
         return new Time(newId, time);
     }
 
     @Override
-    public List<Time> getTimes() {
+    public List<Time> findAll() {
         return jdbcTemplate.query("SELECT * FROM time",
                 (rs, rowNum) -> new Time(
                         rs.getLong("id"),
@@ -38,7 +39,17 @@ public class TimeJdbcDAO implements TimeDAO {
     }
 
     @Override
-    public void deleteTime(Long id) {
+    public Optional<Time> findTimeById(Long id) {
+        List<Time> times = jdbcTemplate.query("SELECT * FROM time WHERE id = ?",
+                (rs, rowNum) -> new Time(
+                        rs.getLong("id"),
+                        rs.getString("time")
+                ), id);
+        return times.isEmpty() ? Optional.empty() : Optional.of(times.get(0));
+    }
+
+    @Override
+    public void deleteById(Long id) {
         int rowsAffected = jdbcTemplate.update("DELETE FROM time WHERE id = ?", id);
         if (rowsAffected == 0) {
             throw new IllegalArgumentException("No time with the given id exists.");

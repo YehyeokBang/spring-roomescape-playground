@@ -30,7 +30,7 @@ class TimeServiceTest {
         // given
         Time time1 = new Time(1L, "10:00");
         Time time2 = new Time(2L, "12:00");
-        when(timeDAO.getTimes()).thenReturn(List.of(time1, time2));
+        when(timeDAO.findAll()).thenReturn(List.of(time1, time2));
 
         // when
         List<ResponseTime> times = timeService.getTimes();
@@ -48,7 +48,7 @@ class TimeServiceTest {
     void addTimeTest() {
         // given
         Time time = new Time(1L, "10:00");
-        when(timeDAO.saveTime("10:00")).thenReturn(time);
+        when(timeDAO.save("10:00")).thenReturn(time);
 
         // when
         ResponseTime responseTime = timeService.addTime("10:00");
@@ -68,6 +68,6 @@ class TimeServiceTest {
         timeService.deleteTime(id);
 
         // then
-        verify(timeDAO).deleteTime(id);
+        verify(timeDAO).deleteById(id);
     }
 }

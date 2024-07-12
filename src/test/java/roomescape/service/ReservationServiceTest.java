@@ -36,7 +36,7 @@ class ReservationServiceTest {
         // given
         Reservation reservation1 = new Reservation(1L, "bang", "2024-07-11", 1L);
         Reservation reservation2 = new Reservation(2L, "bang", "2024-07-12", 2L);
-        when(reservationDAO.getReservations()).thenReturn(List.of(reservation1, reservation2));
+        when(reservationDAO.findAll()).thenReturn(List.of(reservation1, reservation2));
         when(timeDAO.findTimeById(1L)).thenReturn(Optional.of(new Time(1L, "10:00")));
         when(timeDAO.findTimeById(2L)).thenReturn(Optional.of(new Time(2L, "12:00")));
 
@@ -62,7 +62,7 @@ class ReservationServiceTest {
     void createReservationTest() {
         // given
         Reservation reservation = new Reservation(1L, "bang", "2024-07-11", 1L);
-        when(reservationDAO.saveReservation("bang", "2024-07-11", 1L)).thenReturn(reservation);
+        when(reservationDAO.save("bang", "2024-07-11", 1L)).thenReturn(reservation);
         when(timeDAO.findTimeById(1L)).thenReturn(Optional.of(new Time(1L, "10:00")));
 
         // when
@@ -86,6 +86,6 @@ class ReservationServiceTest {
         reservationService.deleteReservation(id);
 
         // then
-        verify(reservationDAO).deleteReservationById(id);
+        verify(reservationDAO).deleteById(id);
     }
 }

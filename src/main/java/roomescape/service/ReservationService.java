@@ -21,19 +21,19 @@ public class ReservationService {
     }
 
     public List<ResponseReservation> getReservations() {
-        List<Reservation> reservations = reservationDAO.getReservations();
+        List<Reservation> reservations = reservationDAO.findAll();
         return reservations.stream()
                 .map(this::mapToResponseReservation)
                 .toList();
     }
 
     public ResponseReservation createReservation(String name, String date, Long timeId) {
-        Reservation savedReservation = reservationDAO.saveReservation(name, date, timeId);
+        Reservation savedReservation = reservationDAO.save(name, date, timeId);
         return mapToResponseReservation(savedReservation);
     }
 
     public void deleteReservation(Long id) {
-        reservationDAO.deleteReservationById(id);
+        reservationDAO.deleteById(id);
     }
 
     private ResponseReservation mapToResponseReservation(Reservation reservation) {

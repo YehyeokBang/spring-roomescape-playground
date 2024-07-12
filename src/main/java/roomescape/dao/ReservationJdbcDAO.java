@@ -23,14 +23,14 @@ public class ReservationJdbcDAO implements ReservationDAO {
     }
 
     @Override
-    public Reservation saveReservation(String name, String date, Long timeId) {
+    public Reservation save(String name, String date, Long timeId) {
         Map<String, Object> parameters = getParametersMapForInsert(name, date, timeId);
         long newId = (long) simpleJdbcInsert.executeAndReturnKey(parameters);
         return new Reservation(newId, name, date, timeId);
     }
 
     @Override
-    public List<Reservation> getReservations() {
+    public List<Reservation> findAll() {
         String query = """
             SELECT
                 r.id as reservation_id,
@@ -51,7 +51,7 @@ public class ReservationJdbcDAO implements ReservationDAO {
     }
 
     @Override
-    public void deleteReservationById(Long id) {
+    public void deleteById(Long id) {
         int rowsAffected = jdbcTemplate.update("DELETE FROM reservation WHERE id = ?", id);
         if (rowsAffected == 0) {
             throw new IllegalArgumentException("존재하지 않는 예약입니다.");

@@ -2,7 +2,6 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationDAO;
-import roomescape.dao.TimeDAO;
 import roomescape.dto.ResponseReservation;
 import roomescape.dto.ResponseTime;
 import roomescape.model.Reservation;
@@ -13,11 +12,9 @@ import java.util.List;
 @Service
 public class ReservationService {
     private final ReservationDAO reservationDAO;
-    private final TimeDAO timeDAO;
 
-    public ReservationService(ReservationDAO reservationDAO, TimeDAO timeDAO) {
+    public ReservationService(ReservationDAO reservationDAO) {
         this.reservationDAO = reservationDAO;
-        this.timeDAO = timeDAO;
     }
 
     public List<ResponseReservation> getReservations() {
@@ -40,13 +37,8 @@ public class ReservationService {
         long id = reservation.getId();
         String name = reservation.getName();
         String date = reservation.getDate();
-        Time time = getTimeById(reservation.getTimeId());
+        Time time = reservation.getTime();
         return ResponseReservation.of(id, name, date, mapToResponseTime(time));
-    }
-
-    private Time getTimeById(Long timeId) {
-        return timeDAO.findTimeById(timeId)
-                .orElseThrow(() -> new IllegalArgumentException("No time with the given id exists."));
     }
 
     private ResponseTime mapToResponseTime(Time time) {

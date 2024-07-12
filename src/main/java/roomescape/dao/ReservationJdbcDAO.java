@@ -24,9 +24,10 @@ public class ReservationJdbcDAO implements ReservationDAO {
 
     @Override
     public Reservation save(String name, String date, Long timeId) {
+        Time time = getTimeById(timeId);
         Map<String, Object> parameters = getParametersMapForInsert(name, date, timeId);
         long newId = (long) simpleJdbcInsert.executeAndReturnKey(parameters);
-        return new Reservation(newId, name, date, timeId);
+        return new Reservation(newId, name, date, time);
     }
 
     @Override
@@ -45,7 +46,8 @@ public class ReservationJdbcDAO implements ReservationDAO {
             String name = rs.getString("name");
             String date = rs.getString("date");
             Long timeId = rs.getLong("time_id");
-            return new Reservation(reservationId, name, date, timeId);
+            String timeValue = rs.getString("time_value");
+            return new Reservation(reservationId, name, date, new Time(timeId, timeValue));
         });
 
     }

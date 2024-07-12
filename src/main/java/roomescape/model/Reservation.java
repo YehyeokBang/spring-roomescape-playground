@@ -4,21 +4,21 @@ public class Reservation {
     private final Long id;
     private final String name;
     private final String date;
-    private final Long timeId;
+    private final Time time;
 
-    public Reservation(Long id, String name, String date, Long timeId) {
-        checkAllFields(id, name, date, timeId);
+    public Reservation(Long id, String name, String date, Time time) {
+        checkAllFields(id, name, date, time);
         this.id = id;
         this.name = name;
         this.date = date;
-        this.timeId = timeId;
+        this.time = time;
     }
 
-    private void checkAllFields(Long id, String name, String date, Long timeId) {
+    private void checkAllFields(Long id, String name, String date, Time time) {
         checkId(id);
         checkName(name);
         checkDate(date);
-        checkTimeId(timeId);
+        checkTime(time);
     }
 
     private void checkId(Long id) {
@@ -39,8 +39,8 @@ public class Reservation {
         }
     }
 
-    private void checkTimeId(Long timeId) {
-        if (timeId == null) {
+    private void checkTime(Time time) {
+        if (time == null) {
             throw new IllegalArgumentException("Time is required");
         }
     }
@@ -57,7 +57,7 @@ public class Reservation {
         return date;
     }
 
-    public Long getTimeId() {
-        return timeId;
+    public Time getTime() {
+        return time;
     }
 }

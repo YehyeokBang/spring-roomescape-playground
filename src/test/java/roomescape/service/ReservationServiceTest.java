@@ -13,7 +13,6 @@ import roomescape.model.Reservation;
 import roomescape.model.Time;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
@@ -34,11 +33,11 @@ class ReservationServiceTest {
     @DisplayName("예약 목록 조회 테스트")
     void getReservationsTest() {
         // given
-        Reservation reservation1 = new Reservation(1L, "bang", "2024-07-11", 1L);
-        Reservation reservation2 = new Reservation(2L, "bang", "2024-07-12", 2L);
+        Time time1 = new Time(1L, "10:00");
+        Time time2 = new Time(2L, "12:00");
+        Reservation reservation1 = new Reservation(1L, "bang", "2024-07-11", time1);
+        Reservation reservation2 = new Reservation(2L, "bang", "2024-07-12", time2);
         when(reservationDAO.findAll()).thenReturn(List.of(reservation1, reservation2));
-        when(timeDAO.findTimeById(1L)).thenReturn(Optional.of(new Time(1L, "10:00")));
-        when(timeDAO.findTimeById(2L)).thenReturn(Optional.of(new Time(2L, "12:00")));
 
         // when
         List<ResponseReservation> reservations = reservationService.getReservations();
@@ -61,9 +60,9 @@ class ReservationServiceTest {
     @DisplayName("예약 추가 테스트")
     void createReservationTest() {
         // given
-        Reservation reservation = new Reservation(1L, "bang", "2024-07-11", 1L);
+        Time time = new Time(1L, "10:00");
+        Reservation reservation = new Reservation(1L, "bang", "2024-07-11", time);
         when(reservationDAO.save("bang", "2024-07-11", 1L)).thenReturn(reservation);
-        when(timeDAO.findTimeById(1L)).thenReturn(Optional.of(new Time(1L, "10:00")));
 
         // when
         ResponseReservation responseReservation = reservationService.createReservation("bang", "2024-07-11", 1L);

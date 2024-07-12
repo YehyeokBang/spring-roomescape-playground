@@ -8,7 +8,6 @@ import roomescape.model.Time;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Repository
 public class TimeJdbcDAO implements TimeDAO {
@@ -36,16 +35,6 @@ public class TimeJdbcDAO implements TimeDAO {
                         rs.getLong("id"),
                         rs.getString("time")
                 ));
-    }
-
-    @Override
-    public Optional<Time> findTimeById(Long id) {
-        List<Time> times = jdbcTemplate.query("SELECT * FROM time WHERE id = ?",
-                (rs, rowNum) -> new Time(
-                        rs.getLong("id"),
-                        rs.getString("time")
-                ), id);
-        return times.isEmpty() ? Optional.empty() : Optional.of(times.get(0));
     }
 
     @Override
